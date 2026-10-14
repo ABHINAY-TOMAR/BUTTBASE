@@ -55,7 +55,3 @@ Dev mode is a **stateless echo**: writes return real Smart IDs and route by pref
 
 - **ToS risk:** mass-creating free orgs/projects can be judged free-tier abuse; worst case is account termination. Keep volumes modest (5–10 nodes), stay throttled (`PROVISION_MAX_PER_DAY`), never keep irreplaceable data only on farmed nodes — export/self-host is the escape hatch (idea.md §21).
 - The **api-keys response shape** is parsed defensively and still needs one live verification against a real PAT (marked `TODO(live-verify)` in `apps/provisioner/src/management.ts`).
-"# BUTTBASE" 
-"# BUTTBASE" 
-"# BUTTBASE" 
-"# BUTTBASE" 

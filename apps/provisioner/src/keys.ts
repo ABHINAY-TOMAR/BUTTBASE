@@ -50,11 +50,27 @@ export async function fetchNodeKeys(mgmt: SupabaseManagement, ref: string): Prom
 
   if (!anon || !serviceRole) {
     throw new Error(
-      'fetchNodeKeys: could not extract anon + service_role from api-keys response — needs live verification (docs/research-notes.md SS5). Response entry keys: ' +
-        JSON.stringify(
-          entries.map((e) => (e && typeof e === 'object' ? Object.keys(e as Record<string, unknown>) : typeof e))
-        ).slice(0, 300)
+      'fetchNodeKeys: could not extract anon + service_role from Management API response.\n' +
+        'Raw entry count: ' +
+        entries.length +
+        '\n' +
+        'Entry keys seen: ' +
+        JSON.stringify(entries.map((e) => (e && typeof e === 'object' ? Object.keys(e as Record<string, unknown>) : typeof e))).slice(0, 500) +
+        '\n' +
+        'Full response (first 1000 chars): ' +
+        JSON.stringify(entries).slice(0, 1000) +
+        '\n' +
+        'Docs: docs/research-notes.md §5 — run `tsx src/index.ts queue-once` with a real PAT to verify.'
     );
+  }
+
+  // Sanity check: keys must look like JWTs (three segments separated by dots)
+  const JWT_RE = /^[\w-]+\.[\w-]+\.[\w-]+$/;
+  if (!JWT_RE.test(serviceRole)) {
+    throw new Error('fetchNodeKeys: service_role key does not look like a JWT — value starts with: ' + serviceRole.slice(0, 20));
+  }
+  if (!JWT_RE.test(anon)) {
+    throw new Error('fetchNodeKeys: anon key does not look like a JWT — value starts with: ' + anon.slice(0, 20));
   }
 
   return { anon, serviceRole };

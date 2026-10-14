@@ -13,7 +13,7 @@ export const CATEGORY_CODE: Record<NodeCategory, string> = {
   mixed: 'mix',
 };
 
-export const PREFIX_RE = /^(img|txt|pdf|mix)\d{2}$/;
+export const PREFIX_RE = /^(img|txt|pdf|mix)\d{2,3}$/;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export interface ParsedSmartId {
@@ -55,9 +55,13 @@ export function categoryOfPrefix(prefix: string): NodeCategory | null {
 export function suggestPrefix(category: NodeCategory, existingPrefixes: readonly string[]): string {
   const code = CATEGORY_CODE[category];
   const used = new Set(existingPrefixes.map((p) => p.toLowerCase()));
-  for (let n = 1; n <= 99; n++) {
-    const candidate = code + String(n).padStart(2, '0');
+  for (let n = 1; n <= 999; n++) {
+    const candidate = code + String(n).padStart(n < 100 ? 2 : 3, '0');
     if (!used.has(candidate.toLowerCase())) return candidate;
   }
-  throw new Error('Prefix space exhausted for category ' + category);
+  throw new Error(
+    'PREFIX_SPACE_EXHAUSTED: all 999 prefixes used for category ' +
+      category +
+      '. This is ~499 GB of storage — time for a new category or a migration.'
+  );
 }

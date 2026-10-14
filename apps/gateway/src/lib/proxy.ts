@@ -68,9 +68,22 @@ export async function proxyToNode(
   }
 }
 
+/** Headers that reveal Supabase/Cloudflare as the backend — strip them (idea.md §18 DON'T-5). */
+const STRIP_RESPONSE_HEADERS = new Set([
+  'x-supabase-edge-id', 'x-supabase-cache-status', 'x-supabase-request-id',
+  'server',  // hides "cloudflare" fingerprint
+  'via',     // hides "supabase" hop
+  'cf-cache-status', 'cf-ray', 'cf-request-id',
+  'report-to', 'nel',
+]);
+
 /** Pass an upstream response through, tagging it with the node prefix (never the URL). */
 export function passThrough(upstream: Response, prefix: string): Response {
-  const res = new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: upstream.headers });
+  const cleaned = new Headers();
+  upstream.headers.forEach((value, key) => {
+    if (!STRIP_RESPONSE_HEADERS.has(key.toLowerCase())) cleaned.set(key, value);
+  });
+  const res = new Response(upstream.body, { status: upstream.status, statusText: upstream.statusText, headers: cleaned });
   res.headers.set('x-bb-node', prefix);
   return res;
 }
