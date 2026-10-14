@@ -1,0 +1,22 @@
+{
+  "name": "@buttbase/provisioner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "worker": "tsx src/index.ts worker",
+    "dev": "tsx src/index.ts worker",
+    "queue-once": "tsx src/index.ts queue-once",
+    "keepalive-once": "tsx src/index.ts keepalive-once",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@buttbase/encryption": "workspace:*",
+    "@buttbase/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

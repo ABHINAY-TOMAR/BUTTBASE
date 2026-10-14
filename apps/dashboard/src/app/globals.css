@@ -1,0 +1,41 @@
+@import '@fontsource-variable/inter';
+@import '@fontsource/roboto-mono/400.css';
+@import '@fontsource/roboto-mono/500.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: #111312;
+  color: #ededed;
+}
+
+/* Visible focus for keyboard nav — never removed (ui-ux-pro-max checklist). */
+:focus-visible {
+  outline: 2px solid #3ecf8e;
+  outline-offset: 2px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #2e2e2e;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulseDot {
+    animation: none;
+  }
+}

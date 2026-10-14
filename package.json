@@ -1,0 +1,17 @@
+{
+  "name": "buttbase",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:packages": "pnpm --filter @buttbase/shared-types --filter @buttbase/encryption build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "dev:dashboard": "pnpm --filter @buttbase/dashboard dev",
+    "dev:gateway": "pnpm --filter @buttbase/gateway dev",
+    "dev:provisioner": "pnpm --filter @buttbase/provisioner dev",
+    "build": "pnpm build:packages && pnpm --filter @buttbase/dashboard --filter @buttbase/gateway build"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}
