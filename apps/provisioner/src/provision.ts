@@ -82,14 +82,29 @@ export async function provisionNode(job: ProvisionJob, mgmt: SupabaseManagement,
     region_selection: { type: 'specific', code: regionCode() },
   });
   const ref = projectRef(project);
+  // FLAW-04 FIX: anchor the project_ref in the job row immediately so cleanup is possible on crash
+  await master.markJob(job.id, { provisioning_project_ref: ref });
   console.log('[provision] created project ' + name + ' (' + ref + ') in org ' + org.name);
 
   // 4) cold boot is 2–5 min → poll every 20 s
-  await waitUntilActive(mgmt, ref);
-  console.log('[provision] project ACTIVE — fetching keys');
+  let keys: { anon: string; serviceRole: string };
+  try {
+    await waitUntilActive(mgmt, ref);
+    console.log('[provision] project ACTIVE — fetching keys');
 
-  // 5) keys → encrypt at rest (AES-256-GCM)
-  const keys = await fetchNodeKeys(mgmt, ref);
+    // 5) keys → encrypt at rest (AES-256-GCM)
+    keys = await fetchNodeKeys(mgmt, ref);
+  } catch (e) {
+    // Attempt to delete the orphaned project before propagating the failure
+    console.error('[provision] cold boot or key fetch failed for ' + ref + ' — attempting cleanup');
+    try {
+      await mgmt.deleteProject(ref);
+      console.log('[provision] orphaned project ' + ref + ' deleted successfully');
+    } catch (delErr) {
+      console.error('[provision] cleanup failed for ' + ref + ' — manually delete this project: ' + String(delErr));
+    }
+    throw e; // re-throw so queue marks job as failed
+  }
   const encKey = await deriveKey(encryptionKeyRaw());
   const [serviceRoleEncrypted, anonEncrypted] = await Promise.all([
     encryptText(keys.serviceRole, encKey),

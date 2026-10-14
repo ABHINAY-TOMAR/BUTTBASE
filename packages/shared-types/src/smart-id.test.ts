@@ -50,9 +50,11 @@ describe('categoryOfPrefix', () => {
 });
 
 describe('isNodePrefix', () => {
-  it('validates the two-digit convention', () => {
+  it('validates the two-to-three digit convention', () => {
     expect(isNodePrefix('img01')).toBe(true);
+    expect(isNodePrefix('img100')).toBe(true);
+    expect(isNodePrefix('img999')).toBe(true);
     expect(isNodePrefix('img1')).toBe(false);
-    expect(isNodePrefix('img100')).toBe(false);
+    expect(isNodePrefix('img1000')).toBe(false);
   });
 });
