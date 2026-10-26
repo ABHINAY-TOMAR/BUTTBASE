@@ -29,6 +29,7 @@ export interface ProvisionJob {
   requested_data_type: NodeCategory;
   requested_name: string | null;
   status: 'pending' | 'processing' | 'completed' | 'failed';
+  provisioning_project_ref?: string | null;
   result_node_prefix: string | null;
   error_message: string | null;
   created_at: string;

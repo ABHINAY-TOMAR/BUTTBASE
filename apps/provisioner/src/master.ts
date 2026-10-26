@@ -31,7 +31,16 @@ export class MasterDb {
   }
 
   listRegistry(): Promise<RegistryNode[]> {
-    return this.call<RegistryNode[]>('/rest/v1/projects_registry?select=*');
+    return this.call<RegistryNode[]>(
+      '/rest/v1/projects_registry?select=id,node_prefix,node_name,data_type,supabase_url,service_role_key_encrypted,organization_slug,project_ref,region,storage_used_mb,storage_limit_mb,egress_used_gb,egress_limit_gb,is_active,is_paused,last_keepalive_at,last_provisioned_at,created_at'
+    );
+  }
+
+  /** Jobs that have a project_ref but are still in failed/processing state (potential orphans). */
+  listOrphanedJobs(): Promise<ProvisionJob[]> {
+    return this.call<ProvisionJob[]>(
+      '/rest/v1/provisioning_queue?select=*&provisioning_project_ref=not.is.null&status=in.(failed,processing)&order=created_at.desc&limit=50'
+    );
   }
 
   async insertRegistry(row: Record<string, unknown>): Promise<RegistryNode> {

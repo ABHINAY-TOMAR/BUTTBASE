@@ -107,4 +107,8 @@ export class SupabaseManagement {
   restoreProject(ref: string): Promise<void> {
     return this.call<void>('/v1/projects/' + encodeURIComponent(ref) + '/restore', { method: 'POST' });
   }
+
+  deleteProject(ref: string): Promise<void> {
+    return this.call<void>('/v1/projects/' + encodeURIComponent(ref), { method: 'DELETE' });
+  }
 }
